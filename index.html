@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Type://Soul Builder</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #181a20 0%, #23242a 100%);
+      color: #e0e0e0;
+      font-family: 'Orbitron', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: rgba(30, 32, 40, 0.95);
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+      padding: 32px 40px 40px 40px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      letter-spacing: 2px;
+      margin-bottom: 24px;
+      color: #7ee7ff;
+      text-shadow: 0 2px 8px #0ff2, 0 0 2px #fff;
+    }
+    .builder-title-row {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .build-name-input {
+      font-size: 1.3rem;
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      background: #23242a;
+      color: #7ee7ff;
+      margin-bottom: 18px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      font-family: 'Orbitron', Arial, sans-serif;
+      box-shadow: 0 2px 8px #0002;
+    }
+    .section-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    .section-tab-btn {
+      background: #23242a;
+      color: #7ee7ff;
+      border: 2px solid #7ee7ff;
+      border-radius: 8px;
+      padding: 10px 28px;
+      font-size: 1.1rem;
+      font-family: 'Orbitron', Arial, sans-serif;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .section-tab-btn.active, .section-tab-btn:hover {
+      background: #7ee7ff;
+      color: #181a20;
+    }
+    .builder-section {
+      display: none;
+      margin-bottom: 32px;
+    }
+    .builder-section.active {
+      display: block;
+    }
+    .section {
+      margin-bottom: 32px;
+    }
+    label {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      display: block;
+      color: #7ee7ff;
+    }
+    select, .dropdown {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #23242a;
+      color: #e0e0e0;
+      font-size: 1rem;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px #0002;
+    }
+    .rarity {
+      font-size: 0.95rem;
+      margin-left: 8px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: #222;
+      color: #fff;
+      display: inline-block;
+    }
+    .rarity-common { background: #444; color: #fff; }
+    .rarity-rare { background: #2e82ff; color: #fff; }
+    .rarity-legendary { background: #ffb300; color: #fff; }
+    .rarity-mythic { background: #e100ff; color: #fff; }
+    .desc-hover {
+      position: relative;
+      cursor: pointer;
+      border-bottom: 1px dotted #7ee7ff;
+    }
+    .desc-popup {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 120%;
+      background: #23242a;
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px #0008;
+      z-index: 10;
+      min-width: 220px;
+      max-width: 350px;
+      font-size: 0.98rem;
+    }
+    .desc-hover:hover .desc-popup {
+      display: block;
+    }
+    .save-share {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      justify-content: center;
+    }
+    .save-share button {
+      background: #7ee7ff;
+      color: #181a20;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 1.1rem;
+      font-family: 'Orbitron', Arial, sans-serif;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .save-share button:hover {
+      background: #4fd1ff;
+    }
+    .link-box {
+      margin-top: 18px;
+      text-align: center;
+      background: #23242a;
+      border-radius: 8px;
+      padding: 10px 0;
+      color: #7ee7ff;
+      font-size: 1.1rem;
+      word-break: break-all;
+    }
+    .skills-flex-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 48px;
+      margin-top: 18px;
+      margin-bottom: 18px;
+    }
+    #skill-section {
+      flex: 1 1 320px;
+      min-width: 220px;
+      max-width: 340px;
+      background: #23242a;
+      border-radius: 10px;
+      padding: 16px 12px;
+      color: #7ee7ff;
+      font-size: 1.05rem;
+    }
+    #selected-skills-section {
+      flex: 1 1 180px;
+      min-width: 160px;
+      max-width: 220px;
+      background: #23242a;
+      border-radius: 10px;
+      padding: 16px 12px;
+      color: #7ee7ff;
+      font-size: 1.05rem;
+    }
+    #points-section > label {
+      display: block;
+      text-align: center;
+      margin-bottom: 12px;
+    }
+    .stat-points-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 0;
+    }
+    .stat-points-row > div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    @media (max-width: 700px) {
+      .skills-flex-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 18px;
+      }
+      #skill-section, #selected-skills-section {
+        max-width: 100%;
+        min-width: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Type://Soul Build Creator</h1>
+    <div class="builder-title-row">
+      <input type="text" id="build-name" class="build-name-input" placeholder="Enter Build Name...">
+    </div>
+    <div class="section-tabs">
+      <button type="button" class="section-tab-btn" data-section="race">Race</button>
+      <button type="button" class="section-tab-btn" data-section="stats">Stats</button>
+      <button type="button" class="section-tab-btn" data-section="skills">Skills</button>
+    </div>
+    <div class="builder-section" id="section-race">
+      <div class="section">
+        <label for="race">Race</label>
+        <select id="race" name="race">
+          <option value="">Select Race</option>
+          <option value="shinigami">Shinigami</option>
+          <option value="hollow">Hollow</option>
+          <option value="quincy">Quincy</option>
+        </select>
+      </div>
+      <div class="section" id="clan-section" style="display:none;"></div>
+      <div class="section" id="weapon-section" style="display:none;"></div>
+      <div class="section" id="transformation-section" style="display:none;"></div>
+      <div class="section" id="essence-section" style="display:none;"></div>
+      <div class="section" id="ultra-section" style="display:none;"></div>
+      <div class="section" id="cybernetic-section" style="display:none;"></div>
+    </div>
+    <div class="builder-section" id="section-stats">
+      <div class="section" id="points-section" style="margin-bottom: 18px;">
+        <label>Stat Points</label>
+        <div class="stat-points-row">
+          <div>
+            <label for="hakuda_points">Hakuda</label>
+            <input type="number" id="hakuda_points" name="hakuda_points" min="0" max="100" value="0" style="width:70px; border-radius:6px; padding:6px; border:none; background:#23242a; color:#e0e0e0;">
+          </div>
+          <div>
+            <label for="kendo_points">Kendo</label>
+            <input type="number" id="kendo_points" name="kendo_points" min="0" max="100" value="0" style="width:70px; border-radius:6px; padding:6px; border:none; background:#23242a; color:#e0e0e0;">
+          </div>
+          <div>
+            <label for="kido_points">Kido</label>
+            <input type="number" id="kido_points" name="kido_points" min="0" max="100" value="0" style="width:70px; border-radius:6px; padding:6px; border:none; background:#23242a; color:#e0e0e0;">
+          </div>
+          <div>
+            <label for="medic_points">Medic</label>
+            <input type="number" id="medic_points" name="medic_points" min="0" max="100" value="0" style="width:70px; border-radius:6px; padding:6px; border:none; background:#23242a; color:#e0e0e0;">
+          </div>
+          <div>
+            <label for="speed_points">Speed</label>
+            <input type="number" id="speed_points" name="speed_points" min="0" max="100" value="0" style="width:70px; border-radius:6px; padding:6px; border:none; background:#23242a; color:#e0e0e0;">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="builder-section" id="section-skills">
+      <div class="section skills-flex-row">
+        <div id="skill-section"></div>
+        <div id="selected-skills-section"></div>
+      </div>
+    </div>
+    <div class="save-share">
+      <button type="button" id="save-btn">Save/Share Build</button>
+    </div>
+    <div class="link-box" id="share-link" style="display:none;"></div>
+  </div>
+  <script src="builder-data.js"></script>
+  <script src="builder.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // --- CONSTANTS & DATA ---
+      const POINT_FIELDS = [
+        'hakuda_points', 'kendo_points', 'kido_points', 'medic_points', 'speed_points'
+      ];
+      const POINT_LIMIT = 65;
+      const MAX_SKILLBOXES = 2;
+      // --- Moveset Lists (from user) ---
+      const MOVES = {
+        hakuda: [
+          { name: "Hakuda Style", req: p => p.hakuda_points >= 1 },
+          { name: "Duelist's Dance", req: p => p.hakuda_points >= 1 },
+          { name: "Rising Shot", req: p => p.hakuda_points >= 2 },
+          { name: "Grand Entrance", req: p => p.hakuda_points >= 8 },
+          { name: "Whirlwind Step", req: p => p.hakuda_points >= 12 && p.speed_points >= 3 },
+          { name: "Pulse", req: p => p.hakuda_points >= 18 },
+          { name: "Catching Dragon", req: p => p.hakuda_points >= 20 },
+          { name: "Ankle Splitter", req: p => p.hakuda_points >= 22 },
+          { name: "Triple Striker", req: p => p.hakuda_points >= 28 },
+          { name: "Absolute Defense", req: p => p.hakuda_points >= 30 },
+          { name: "Demonic Embrace", req: p => p.hakuda_points >= 30 },
+          { name: "Negation", req: p => p.hakuda_points >= 30 },
+          { name: "Shadow Impale", req: p => p.hakuda_points >= 35 },
+          { name: "Tora Reach", req: p => p.hakuda_points >= 40 },
+          { name: "Flying Dragon", req: p => p.hakuda_points >= 33 && p.speed_points >= 8 },
+          { name: "Spine Rend", req: p => p.hakuda_points >= 50 },
+          { name: "Ghostwalk", req: p => p.hakuda_points >= 30 && p.kido_points >= 35 },
+        ],
+        hakudaSkillboxes: [
+          { name: "Shori", req: p => p.hakuda_points >= 25 },
+          { name: "Gehenna", req: p => p.hakuda_points >= 25 },
+          { name: "Death flair", req: p => p.hakuda_points >= 25 },
+        ],
+        kendo: [
+          { name: "Safeguard", req: p => p.kendo_points >= 3 },
+          { name: "Brace", req: p => p.kendo_points >= 5 },
+          { name: "Thrust", req: p => p.kendo_points >= 8 },
+          { name: "Suikawari", req: p => p.kendo_points >= 10 },
+          { name: "Senmaioroshi", req: p => p.kendo_points >= 16 },
+          { name: "Bisection", req: p => p.kendo_points >= 18 },
+          { name: "Rising Swallow", req: p => p.kendo_points >= 20 },
+          { name: "Vertical Down", req: p => p.kendo_points >= 24 },
+          { name: "Split Gate", req: p => p.kendo_points >= 24 },
+          { name: "Overpowering Slash", req: p => p.kendo_points >= 30 },
+          { name: "Heavenly Descent", req: p => p.kendo_points >= 15 && p.medic_points >= 15 },
+          { name: "Delayed Crossings", req: p => p.kendo_points >= 35 },
+          { name: "Flower Passage", req: p => p.kendo_points >= 40 },
+          { name: "Pressure Shift", req: p => p.kendo_points >= 25 && p.speed_points >= 20 },
+          { name: "Flowing Petals", req: p => p.kendo_points >= 45 },
+          { name: "Mortal Ties", req: p => p.kendo_points >= 50 },
+        ],
+        kendoSkillboxes: [
+          { name: "Sonata Flow", req: p => p.kendo_points >= 25 },
+          { name: "Eviscerate", req: p => p.kendo_points >= 25 },
+          { name: "Crescent Relief", req: p => p.kendo_points >= 25 },
+        ],
+        medic: [
+          { name: "Medic(heal)", req: p => p.medic_points >= 3 },
+          { name: "Self Heal", req: p => p.medic_points >= 5 },
+          { name: "Reiatsu Transfer", req: p => p.medic_points >= 6 },
+          { name: "Barrier", req: p => p.medic_points >= 7 },
+          { name: "Revitalize", req: p => p.medic_points >= 14 },
+          { name: "Medic 2", req: p => p.medic_points >= 15 },
+          { name: "Selfless Heart", req: p => p.medic_points >= 16 },
+          { name: "Medic 3", req: p => p.medic_points >= 21 },
+          { name: "Self Heal 2", req: p => p.medic_points >= 21 },
+          { name: "Reiatsu Push", req: p => p.medic_points >= 25 },
+          { name: "Healing Circle", req: p => p.medic_points >= 30 },
+          { name: "Self Heal 3", req: p => p.medic_points >= 33 },
+          { name: "Tether", req: p => p.medic_points >= 35 },
+          { name: "Bloody Canvas", req: p => p.medic_points >= 41 },
+          { name: "Reiatsu Rend", req: p => p.medic_points >= 45 },
+          { name: "Leap", req: p => p.medic_points >= 45 },
+          { name: "Encompass", req: p => p.medic_points >= 50 },
+          { name: "Soul Link", req: p => p.medic_points >= 60 },
+        ],
+        medicSkillboxes: [
+          { name: "Overcharge", req: p => p.medic_points >= 25 },
+          { name: "Amplifier", req: p => p.medic_points >= 25 },
+          { name: "Discord", req: p => p.medic_points >= 25 },
+        ],
+        speed: [
+          { name: "Flashstep", req: p => p.speed_points >= 0 },
+          { name: "Flash Tension", req: p => p.speed_points >= 7 },
+          { name: "Flashstep Mastery 1", req: p => p.speed_points >= 8 },
+          { name: "Flash Fakeout", req: p => p.speed_points >= 15 },
+          { name: "Flashstep Mastery 2", req: p => p.speed_points >= 15 },
+          { name: "Blooming Cut", req: p => p.speed_points >= 15 },
+          { name: "Sonido Break", req: (p, r) => r === 'hollow' && p.speed_points >= 15 },
+          { name: "Flash Cut", req: p => p.speed_points >= 16 },
+          { name: "Phantom Trick", req: p => p.speed_points >= 20 },
+          { name: "Enhanced Steps", req: p => p.speed_points >= 30 },
+          { name: "Perfect Flashstep", req: p => p.speed_points >= 33 },
+          { name: "Dropping Fang", req: p => p.speed_points >= 35 },
+          { name: "Floating Strikes", req: p => p.speed_points >= 36 },
+          { name: "Passing Breath", req: p => p.speed_points >= 40 },
+          { name: "Fast Fang", req: p => p.speed_points >= 40 },
+          { name: "Waterfall Dance", req: p => p.speed_points >= 41 },
+          { name: "Skyscraper", req: p => p.speed_points >= 45 },
+          { name: "Swift Slahes", req: p => p.speed_points >= 45 },
+          { name: "Specter Step", req: p => p.speed_points >= 50 },
+          { name: "Time Cut", req: p => p.speed_points >= 60 },
+        ],
+        speedSkillboxes: [
+          { name: "Flash Fang", req: p => p.speed_points >= 25 },
+          { name: "Strata Strike", req: p => p.speed_points >= 25 },
+          { name: "Black Claw", req: p => p.speed_points >= 25 },
+          { name: "Ghost Cleave", req: p => p.speed_points >= 25 },
+        ],
+        // Kido is race-specific
+        kido: {
+          quincy: [
+            { name: "Soul Style", req: p => p.kido_points >= 0 },
+            { name: "Blut Vene", req: p => p.kido_points >= 0 },
+            { name: "Piercing Light", req: p => p.kido_points >= 8 },
+            { name: "Volley", req: p => p.kido_points >= 12 },
+            { name: "Waveshot", req: p => p.kido_points >= 15 },
+            { name: "Slide", req: p => p.kido_points >= 20 },
+            { name: "Focal Point", req: p => p.kido_points >= 23 },
+            { name: "Closer", req: p => p.kido_points >= 27 },
+            { name: "Ethereal Vise", req: p => p.kido_points >= 15 && p.hakuda_points >= 15 },
+            { name: "Reishi String", req: p => p.kido_points >= 33 },
+            { name: "Klavier", req: p => p.kido_points >= 35 },
+            { name: "Still Silver", req: p => p.kido_points >= 35 },
+            { name: "Preserved Reserves", req: p => p.kido_points >= 38 },
+            { name: "Shadows", req: p => p.kido_points >= 40 },
+            { name: "Versch", req: p => p.kido_points >= 40 },
+            { name: "Licht Wind", req: p => p.kido_points >= 45 },
+            { name: "Fliegend", req: p => p.kido_points >= 30 && p.speed_points >= 15 },
+            { name: "Sankt Bogen", req: p => p.kido_points >= 50 },
+            { name: "Heischleig", req: p => p.kido_points >= 60 },
+          ],
+          quincySkillboxes: [
+            { name: "Licht Regen", req: p => p.kido_points >= 25 },
+            { name: "Zorn Gottes", req: p => p.kido_points >= 25 },
+            { name: "Holy Thunder", req: p => p.kido_points >= 25 },
+          ],
+          shinigami: [
+            { name: "Soul Style", req: p => p.kido_points >= 0 },
+            { name: "Byakurai", req: p => p.kido_points >= 3 },
+            { name: "Shakkaho", req: p => p.kido_points >= 5 },
+            { name: "Tenran", req: p => p.kido_points >= 8 },
+            { name: "Geki", req: p => p.kido_points >= 14 },
+            { name: "Hainawa", req: p => p.kido_points >= 15 },
+            { name: "Zangerin", req: p => p.kido_points >= 15 },
+            { name: "Raikoho", req: p => p.kido_points >= 20 },
+            { name: "Gaki Rekko", req: p => p.kido_points >= 25 },
+            { name: "Haien", req: p => p.kido_points >= 30 },
+            { name: "Ethereal Vise", req: p => p.kido_points >= 15 && p.hakuda_points >= 15 },
+            { name: "Tsuzuri Raiden", req: p => p.kido_points >= 31 },
+            { name: "Rikujokoro", req: p => p.kido_points >= 34 },
+            { name: "Fushibi", req: p => p.kido_points >= 35 },
+            { name: "Preserved Reserves", req: p => p.kido_points >= 38 },
+            { name: "Weaker Itto Kaso", req: p => p.kido_points >= 40 },
+            { name: "Heavenly Cannon", req: p => p.kido_points >= 45 },
+            { name: "Sokatsui", req: p => p.kido_points >= 50 },
+            { name: "Danku", req: p => p.kido_points >= 50 },
+          ],
+          shinigamiSkillboxes: [
+            { name: "Goryutenmetsu", req: p => p.kido_points >= 25 },
+            { name: "Shinten Raiho", req: p => p.kido_points >= 25 },
+            { name: "Kuyo Shibari", req: p => p.kido_points >= 25 },
+          ],
+          hollow: [
+            { name: "Cero Grab", req: p => p.kido_points >= 0 },
+            { name: "Tri Cero", req: p => p.kido_points >= 0 },
+            { name: "Cero Cornea", req: p => p.kido_points >= 0 },
+            { name: "Bala", req: p => p.kido_points >= 0 },
+            { name: "Soul Style", req: p => p.kido_points >= 0 },
+            { name: "Blade Cero", req: p => p.kido_points >= 0 },
+            { name: "Finger Cero", req: p => p.kido_points >= 0 },
+            { name: "Hierro", req: p => p.kido_points >= 0 },
+            { name: "Instinct", req: p => p.kido_points >= 10 },
+            { name: "Cero Burst", req: p => p.kido_points >= 15 },
+            { name: "Bala Blackout", req: p => p.kido_points >= 21 },
+            { name: "Bala Barrage", req: p => p.kido_points >= 29 },
+            { name: "Cero Scourge", req: p => p.kido_points >= 30 },
+            { name: "Ethereal Vise", req: p => p.kido_points >= 15 && p.hakuda_points >= 15 },
+            { name: "Cero Confinement", req: p => p.kido_points >= 32 },
+            { name: "Cero Sweep", req: p => p.kido_points >= 35 },
+            { name: "Bala Gum", req: p => p.kido_points >= 36 },
+            { name: "Preserved Reserves", req: p => p.kido_points >= 38 },
+            { name: "Cero Cyclone", req: p => p.kido_points >= 40 },
+            { name: "Bala Drive", req: p => p.kido_points >= 40 },
+            { name: "Cero Salvo", req: p => p.kido_points >= 50 },
+            { name: "Hierro Mastery", req: p => p.kido_points >= 0 },
+            { name: "Hierro Mastery 2", req: p => p.kido_points >= 0 },
+            { name: "Zero", req: p => p.kido_points >= 0 },
+            { name: "Cero Oscuras", req: p => p.kido_points >= 0 },
+          ],
+          hollowSkillboxes: [
+            { name: "Bala Burner", req: p => p.kido_points >= 25 },
+            { name: "Cero Fireflies", req: p => p.kido_points >= 25 },
+            { name: "Hollow Bite", req: p => p.kido_points >= 25 },
+          ],
+        },
+        universalSkillboxes: [
+          { name: "Sanguine Spear", req: () => true },
+          { name: "Earthshatter", req: () => true },
+        ],
+      };
+
+      function getRace() {
+        const raceSel = document.getElementById('race');
+        return raceSel ? raceSel.value : '';
+      }
+
+      function getPoints() {
+        const p = {};
+        for (const f of POINT_FIELDS) {
+          p[f] = parseInt(document.getElementById(f).value) || 0;
+        }
+        return p;
+      }
+
+      function getKidoMovesAndSkillboxes(race) {
+        if (race === 'quincy') return { moves: MOVES.kido.quincy, skillboxes: MOVES.kido.quincySkillboxes };
+        if (race === 'shinigami') return { moves: MOVES.kido.shinigami, skillboxes: MOVES.kido.shinigamiSkillboxes };
+        if (race === 'hollow') return { moves: MOVES.kido.hollow, skillboxes: MOVES.kido.hollowSkillboxes };
+        return { moves: [], skillboxes: [] };
+      }
+
+      function updateSkillOptions() {
+        const points = getPoints();
+        const race = getRace();
+        // Skills
+        const hakudaSkills = MOVES.hakuda.filter(s => s.req(points));
+        const kendoSkills = MOVES.kendo.filter(s => s.req(points));
+        const medicSkills = MOVES.medic.filter(s => s.req(points));
+        const speedSkills = MOVES.speed.filter(s => s.req(points, race));
+        const { moves: kidoSkillsArr, skillboxes: kidoSkillboxesArr } = getKidoMovesAndSkillboxes(race);
+        const kidoSkills = kidoSkillsArr.filter(s => s.req(points));
+        // Skillboxes
+        const hakudaSkillboxes = points.hakuda_points >= 25 ? MOVES.hakudaSkillboxes : [];
+        const kendoSkillboxes = points.kendo_points >= 25 ? MOVES.kendoSkillboxes : [];
+        const medicSkillboxes = points.medic_points >= 25 ? MOVES.medicSkillboxes : [];
+        const speedSkillboxes = points.speed_points >= 25 ? MOVES.speedSkillboxes : [];
+        const kidoSkillboxes = points.kido_points >= 25 ? kidoSkillboxesArr : [];
+        const universalSkillboxes = MOVES.universalSkillboxes;
+        // Render
+        let html = '';
+        function renderSkillList(title, arr, tree) {
+          if (!arr.length) return '';
+          let out = `<div><b>${title}</b><br>`;
+          arr.forEach(s => {
+            out += `<label><input type='checkbox' class='skill-select' data-skill='${s.name}' data-tree='${tree}'> ${s.name}</label><br>`;
+          });
+          out += '</div>';
+          return out;
+        }
+        function renderSkillboxList(title, arr, tree, universal) {
+          if (!arr.length) return '';
+          let out = `<div style="margin-top:8px;"><b>${title}</b><br>`;
+          arr.forEach(s => {
+            out += `<label><input type='checkbox' class='skill-select skillbox-select' data-skill='${s.name}' data-tree='${tree}'> ${s.name} <span style='color:#ffb300'>(${universal ? 'Universal Skillbox' : 'Skillbox'})</span></label><br>`;
+          });
+          out += '</div>';
+          return out;
+        }
+        html += renderSkillList('Hakuda Skills', hakudaSkills, 'hakuda');
+        html += renderSkillboxList('Hakuda Skillboxes', hakudaSkillboxes, 'hakuda-skillbox', false);
+        html += renderSkillList('Kendo Skills', kendoSkills, 'kendo');
+        html += renderSkillboxList('Kendo Skillboxes', kendoSkillboxes, 'kendo-skillbox', false);
+        html += renderSkillList('Medic Skills', medicSkills, 'medic');
+        html += renderSkillboxList('Medic Skillboxes', medicSkillboxes, 'medic-skillbox', false);
+        html += renderSkillList('Speed Skills', speedSkills, 'speed');
+        html += renderSkillboxList('Speed Skillboxes', speedSkillboxes, 'speed-skillbox', false);
+        html += renderSkillList('Kido Skills', kidoSkills, 'kido');
+        html += renderSkillboxList('Kido Skillboxes', kidoSkillboxes, 'kido-skillbox', false);
+        html += renderSkillboxList('Universal Skillboxes', universalSkillboxes, 'universal-skillbox', true);
+        let skillSection = document.getElementById('skill-section');
+        if (skillSection) skillSection.innerHTML = html;
+        updateSelectedSkills();
+      }
+
+      function updateSelectedSkills() {
+        let selected = [];
+        let skillboxCount = 0;
+        document.querySelectorAll('.skill-select:checked').forEach(cb => {
+          const isSkillbox = cb.classList.contains('skillbox-select');
+          if (isSkillbox) skillboxCount++;
+          selected.push(cb.getAttribute('data-skill'));
+        });
+        let html = '<b>Selected Skills</b><ul>';
+        selected.forEach(s => {
+          html += `<li>${s}</li>`;
+        });
+        html += '</ul>';
+        let selectedSkillsSection = document.getElementById('selected-skills-section');
+        if (selectedSkillsSection) selectedSkillsSection.innerHTML = html;
+      }
+
+      // Skillbox selection limit logic
+      document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('skill-select')) {
+          if (e.target.classList.contains('skillbox-select')) {
+            const checkedSkillboxes = document.querySelectorAll('.skillbox-select:checked');
+            if (checkedSkillboxes.length > 2) {
+              e.target.checked = false;
+              alert('You can only select up to 2 skillboxes.');
+              return;
+            }
+          }
+          updateSelectedSkills();
+        }
+      });
+      // --- ENFORCE 65 POINT LIMIT ---
+      function enforcePointLimit(e) {
+        let points = getPoints();
+        let total = points.hakuda_points + points.kendo_points + points.kido_points + points.medic_points + points.speed_points;
+        if (total > POINT_LIMIT) {
+          let over = total - POINT_LIMIT;
+          let val = parseInt(e.target.value) || 0;
+          e.target.value = Math.max(0, val - over);
+        }
+      }
+      // --- Stat point listeners (fix: always update skills after change) ---
+      POINT_FIELDS.forEach(f => {
+        let el = document.getElementById(f);
+        if (el) {
+          el.addEventListener('input', function(e) {
+            enforcePointLimit(e);
+            updateSkillOptions();
+          });
+          el.addEventListener('change', function(e) {
+            enforcePointLimit(e);
+            updateSkillOptions();
+          });
+        }
+      });
+      // --- Race change triggers skill update (fix: update skills immediately) ---
+      const raceSelect = document.getElementById('race');
+      if (raceSelect) {
+        raceSelect.addEventListener('change', function() {
+          updateSkillOptions();
+        });
+      }
+      // --- Section tab logic (unchanged) ---
+      const tabBtns = document.querySelectorAll('.section-tab-btn');
+      const builderSections = document.querySelectorAll('.builder-section');
+      function showSection(section) {
+        builderSections.forEach(sec => sec.classList.remove('active'));
+        document.getElementById('section-' + section).classList.add('active');
+        tabBtns.forEach(btn => btn.classList.remove('active'));
+        document.querySelector('.section-tab-btn[data-section="' + section + '"]').classList.add('active');
+      }
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          showSection(btn.getAttribute('data-section'));
+        });
+      });
+      // Show first section by default
+      showSection('race');
+      updateSkillOptions();
+    });
+  </script>
+</body>
+</html>
